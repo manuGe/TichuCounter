@@ -38,7 +38,6 @@ class YelloAppModel(
         currentGame = game
         gameList.add(game)
         currentScreen = Screen.GAME
-        TODO("Not yet implemented")
     }
 
     private fun Context.toast(message: String) {

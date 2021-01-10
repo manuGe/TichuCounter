@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fhnw.emoba.yelloapp.model.Screen
 import fhnw.emoba.yelloapp.model.YelloAppModel
+import fhnw.emoba.yelloapp.ui.BackButtonHandler
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,6 +35,9 @@ fun GameScreen(model: YelloAppModel) {
             topBar = { GameTopBar(model) },
             bodyContent = { Body(model) }
         )
+    }
+    BackButtonHandler {
+        model.currentScreen = Screen.HOME
     }
 }
 
@@ -64,3 +68,4 @@ fun GameTopBar(model: YelloAppModel) {
         )
     }
 }
+
