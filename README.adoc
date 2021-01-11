@@ -8,6 +8,7 @@
 === Herausstellungsmerkmal meiner App
 
 * Ein Canvas basierter Slider macht Benutzereingaben während dem Spiel intuitiver und einfacher.
+* Dark Mode passt sich der Systemeinstellung an aber kann im Drawer geändert werden
 * Da in den einzelnen Games Informationen wie "Zuletzt gespielt" oder den Zustand gespeichert wird, kann später einfach eine Filterfunktion auf dem Homescreen eingeführt werden.
 
 

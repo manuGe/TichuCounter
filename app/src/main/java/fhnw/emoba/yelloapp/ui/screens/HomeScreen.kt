@@ -95,31 +95,6 @@ private fun Drawer(model: YelloAppModel) {
                 )
             }
         }
-//        ModalDrawerLayout(
-//            // Drawer state to denote whether the drawer should be open or closed.
-//            drawerState = drawerState,
-//            gesturesEnabled = drawerState.isOpen,
-//            drawerContent = {
-//                //drawerContent takes a composable to represent the view/layout to display when the
-//                // drawer is open.
-//                DrawerContentComponent(
-//                    // We pass a state composable that represents the current screen that's selected
-//                    // and what action to take when the drawer is closed.
-//                    currentScreen = currentScreen,
-//                    closeDrawer = { drawerState.close() }
-//                )
-//            },
-//            bodyContent = {
-//                // bodyContent takes a composable to represent the view/layout to display on the
-//                // screen. We select the appropriate screen based on the value stored in currentScreen.
-//                BodyContentComponent(
-//                    currentScreen = currentScreen.value,
-//                    openDrawer = {
-//                        drawerState.open()
-//                    }
-//                )
-//            }
-//        )
     }
 }
 

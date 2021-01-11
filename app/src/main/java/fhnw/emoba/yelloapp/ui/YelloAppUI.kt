@@ -47,10 +47,6 @@ fun AppUI(model: YelloAppModel) {
                 }
             }
         }
-        gameList[0].points.add(Pair(60, 40))
-        gameList[0].points.add(Pair(35, 65))
-        gameList[0].points.add(Pair(100, 0))
-        gameList[0].points.add(Pair(0, 100))
     }
 }
 
