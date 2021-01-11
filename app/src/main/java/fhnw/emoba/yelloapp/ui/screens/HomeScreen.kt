@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +24,7 @@ import fhnw.emoba.yelloapp.data.Game
 import fhnw.emoba.yelloapp.model.Screen
 import fhnw.emoba.yelloapp.model.YelloAppModel
 import fhnw.emoba.yelloapp.ui.BackButtonHandler
+import fhnw.emoba.yelloapp.ui.HSpace
 import fhnw.emoba.yelloapp.ui.VSpace
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,11 +34,14 @@ fun HomeScreen(model: YelloAppModel) {
     val activity = (AmbientLifecycleOwner.current as ComponentActivity)
     val context = AmbientContext.current
     var lastBackPress = 0L
+    val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
 
     MaterialTheme {
         Scaffold(
-            topBar = { HomeTopBar(model) },
+            topBar = { HomeTopBar(model, scaffoldState) },
             bodyContent = { Body(model) },
+            drawerContent = { Drawer(model) },
+            scaffoldState = scaffoldState,
             floatingActionButton = { FAB(model) },
             floatingActionButtonPosition = FabPosition.End
         )
@@ -64,11 +69,57 @@ private fun Body(model: YelloAppModel) {
 }
 
 @Composable
-fun HomeTopBar(model: YelloAppModel) {
+fun HomeTopBar(model: YelloAppModel, scaffoldState: ScaffoldState) {
     model.apply {
         TopAppBar(
-            title = { Text(Screen.HOME.title) }
+            title = { Text(Screen.HOME.title) },
+            navigationIcon = {
+                IconButton(onClick = { scaffoldState.drawerState.open() }) {
+                    Icon(Icons.Filled.Menu)
+                }
+            }
         )
+    }
+}
+
+@Composable
+private fun Drawer(model: YelloAppModel) {
+    with(model) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row {
+                Text(text = "Dark Mode")
+                HSpace(20)
+                Switch(
+                    checked = enableDarkMode,
+                    onCheckedChange = { enableDarkMode = it }
+                )
+            }
+        }
+//        ModalDrawerLayout(
+//            // Drawer state to denote whether the drawer should be open or closed.
+//            drawerState = drawerState,
+//            gesturesEnabled = drawerState.isOpen,
+//            drawerContent = {
+//                //drawerContent takes a composable to represent the view/layout to display when the
+//                // drawer is open.
+//                DrawerContentComponent(
+//                    // We pass a state composable that represents the current screen that's selected
+//                    // and what action to take when the drawer is closed.
+//                    currentScreen = currentScreen,
+//                    closeDrawer = { drawerState.close() }
+//                )
+//            },
+//            bodyContent = {
+//                // bodyContent takes a composable to represent the view/layout to display on the
+//                // screen. We select the appropriate screen based on the value stored in currentScreen.
+//                BodyContentComponent(
+//                    currentScreen = currentScreen.value,
+//                    openDrawer = {
+//                        drawerState.open()
+//                    }
+//                )
+//            }
+//        )
     }
 }
 

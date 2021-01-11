@@ -1,6 +1,7 @@
 package fhnw.emoba.yelloapp.ui.screens
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.*
@@ -80,8 +81,16 @@ fun Table(model: YelloAppModel) {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(text = "Team A", style = TextStyle(fontSize = 18.sp), fontWeight = FontWeight.Bold)
-                Text(text = "Team B", style = TextStyle(fontSize = 18.sp), fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Team A",
+                    style = TextStyle(fontSize = 18.sp),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Team B",
+                    style = TextStyle(fontSize = 18.sp),
+                    fontWeight = FontWeight.Bold
+                )
             }
             VSpace(10)
 
@@ -95,15 +104,10 @@ fun Table(model: YelloAppModel) {
                     Text(text = round.first.toString(), style = TextStyle(fontSize = 17.sp))
                     Text(text = round.second.toString(), style = TextStyle(fontSize = 17.sp))
                 }
-//                Divider(
-//                    modifier = Modifier.padding(start = 40.dp, end = 40.dp),
-//                    color = Color.Black,
-//                    thickness = 1.dp
-//                )
             }
             Divider(
                 modifier = Modifier.padding(start = 40.dp, end = 40.dp),
-                color = Color.Black,
+                color = MaterialTheme.colors.onBackground,
                 thickness = 1.dp
             )
             Row(
@@ -204,6 +208,7 @@ fun Slider(model: YelloAppModel) {
             val canvasHeight = 80.dp
 
             val delta = remember { mutableStateOf(0f) }
+            var colors = MaterialTheme.colors
 
             Canvas(
                 modifier = Modifier
@@ -228,12 +233,12 @@ fun Slider(model: YelloAppModel) {
                     sliderWidth = size.width
 
                     drawRect(
-                        Color.Gray,
+                        color = Color(0xFF3A3C40),
                         topLeft = Offset(0f, 0f),
                         size = Size(sliderWidth, canvasHeight.value)
                     )
                     drawLine(
-                        color = Color.Black,
+                        color = colors.secondary,
                         start = Offset(sliderWidth / 100 * slider, -20f),
                         end = Offset(sliderWidth / 100 * slider, canvasHeight.value + 20f),
                         strokeWidth = 20f
@@ -252,6 +257,7 @@ fun PointButtons(model: YelloAppModel) {
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .weight(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointA += 100 }) {
                     Text(text = "+100", modifier = Modifier.padding(16.dp))
@@ -260,6 +266,7 @@ fun PointButtons(model: YelloAppModel) {
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .weight(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointB += 100 }) {
                     Text(text = "+100", modifier = Modifier.padding(16.dp))
@@ -270,6 +277,7 @@ fun PointButtons(model: YelloAppModel) {
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .weight(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointA -= 100 }) {
                     Text(text = "-100", modifier = Modifier.padding(16.dp))
@@ -278,6 +286,7 @@ fun PointButtons(model: YelloAppModel) {
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .weight(1f),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointB -= 100 }) {
                     Text(text = "-100", modifier = Modifier.padding(16.dp))
@@ -296,6 +305,10 @@ fun SubmitAndResetButton(model: YelloAppModel) {
                     .padding(16.dp)
                     .weight(1f),
                 shape = RoundedCornerShape(32.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colors.background,
+                    contentColor = MaterialTheme.colors.secondary
+                ),
                 elevation = ButtonDefaults.elevation(5.dp),
                 onClick = { tempPointA = 0; tempPointB = 0; slider = 50 }) {
                 Text(text = "Reset", modifier = Modifier.padding(16.dp))
@@ -305,6 +318,7 @@ fun SubmitAndResetButton(model: YelloAppModel) {
                     .padding(16.dp)
                     .weight(1f),
                 shape = RoundedCornerShape(32.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
                 elevation = ButtonDefaults.elevation(5.dp),
                 onClick = { submitPoints() }) {
                 Text(text = "Submit", modifier = Modifier.padding(16.dp))

@@ -2,6 +2,7 @@ package fhnw.emoba.yelloapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import fhnw.emoba.EmobaApp
 import fhnw.emoba.yelloapp.model.YelloAppModel
@@ -17,6 +18,7 @@ object YelloApp : EmobaApp {
 
     @Composable
     override fun CreateAppUI() {
+        model.enableDarkMode = isSystemInDarkTheme()
         AppUI(model)
     }
 
