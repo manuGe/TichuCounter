@@ -58,9 +58,9 @@ private fun Body(model: YelloAppModel) {
         )
         {
             Table(model)
-            VSpace(10)
-            PointPreview(model)
             if (currentGame.state == GameState.RUNNING) {
+                VSpace(10)
+                PointPreview(model)
                 VSpace(10)
                 Slider(model)
                 VSpace(10)
@@ -208,7 +208,7 @@ fun Slider(model: YelloAppModel) {
             val canvasHeight = 80.dp
 
             val delta = remember { mutableStateOf(0f) }
-            var colors = MaterialTheme.colors
+            val colors = MaterialTheme.colors
 
             Canvas(
                 modifier = Modifier

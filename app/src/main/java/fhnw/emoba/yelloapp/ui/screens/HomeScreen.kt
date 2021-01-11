@@ -159,12 +159,15 @@ fun NewGamePopup() {
                                 VSpace(8)
                                 TextField(
                                     value = textState.value,
+                                    activeColor = MaterialTheme.colors.secondary,
                                     onValueChange = { textState.value = it }
                                 )
                             }
                         },
                         confirmButton = {
                             Button(
+                                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+                                enabled = textState.value.text.isNotEmpty(),
                                 onClick = {
                                     createGame(textState.value.text)
                                     newGameDialog = false
@@ -174,7 +177,7 @@ fun NewGamePopup() {
                         },
                         dismissButton = {
                             Button(
-
+                                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
                                 onClick = {
                                     newGameDialog = false
                                 }) {
