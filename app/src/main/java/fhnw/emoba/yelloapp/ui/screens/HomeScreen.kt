@@ -1,6 +1,5 @@
 package fhnw.emoba.yelloapp.ui.screens
 
-import android.view.Gravity
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.platform.AmbientLifecycleOwner
-import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -25,7 +23,6 @@ import fhnw.emoba.yelloapp.data.Game
 import fhnw.emoba.yelloapp.model.Screen
 import fhnw.emoba.yelloapp.model.YelloAppModel
 import fhnw.emoba.yelloapp.ui.BackButtonHandler
-import fhnw.emoba.yelloapp.ui.HSpace
 import fhnw.emoba.yelloapp.ui.VSpace
 import java.text.SimpleDateFormat
 import java.util.*
@@ -62,7 +59,7 @@ private fun Body(model: YelloAppModel) {
                 GameCard(model, game)
             }
         }
-        AlertDialogSample()
+        NewGamePopup()
     }
 }
 
@@ -102,16 +99,20 @@ private fun GameCard(model: YelloAppModel, game: Game) {
             horizontalArrangement = Arrangement.Start
         ) {
             Column(modifier = Modifier.padding(10.dp)) {
-                Text(text = game.name, style = TextStyle(fontSize = 18.sp))
+                Text(text = game.name, style = TextStyle(fontSize = 20.sp))
                 VSpace(height = 5)
-                Text(text = "Spielstand: " + game.stats + "  Zustand: " + game.state.text)
+                Text(text = "Zustand: " + game.state.text)
+                VSpace(height = 2)
+                Text(text = "Spielstand: " + game.stats)
+                VSpace(height = 2)
+                Text(text = "Zuletzt gespielt: " + SimpleDateFormat("D.M.yy HH:mm").format(Date(game.time)))
             }
         }
     }
 }
 
 @Composable
-fun AlertDialogSample() {
+fun NewGamePopup() {
     model.apply {
         val textState = remember { mutableStateOf(TextFieldValue()) }
 
@@ -160,14 +161,5 @@ fun AlertDialogSample() {
 
         }
     }
-}
-
-//TODO: Timestamp für zuletzt gespielt
-@Composable
-private fun Timestamp(game: Game) {
-    Text(
-        text = SimpleDateFormat("HH:mm").format(Date(game.time)),
-        style = TextStyle(fontSize = 12.sp)
-    )
 }
 

@@ -2,12 +2,13 @@
 
 === Bearbeitet von
 
-* Vorname Nachname
+* Manuel Geissbühler
 
 
 === Herausstellungsmerkmal meiner App
 
-* ...
+* Ein Canvas basierter Slider macht Benutzereingaben während dem Spiel intuitiver und einfacher.
+* Da in den einzelnen Games Informationen wie "Zuletzt gespielt" oder den Zustand gespeichert wird, kann später einfach eine Filterfunktion auf dem Homescreen eingeführt werden.
 
 
 === Abgabe
