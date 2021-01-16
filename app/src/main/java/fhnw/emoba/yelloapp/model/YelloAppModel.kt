@@ -1,87 +1,42 @@
 package fhnw.emoba.yelloapp.model
 
-import android.app.Activity
+import android.app.Application
+import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.*
-import androidx.compose.ui.input.key.Key.Companion.Settings
-import androidx.datastore.core.CorruptionException
-import androidx.datastore.core.DataStore
-import androidx.datastore.core.Serializer
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.protobuf.InvalidProtocolBufferException
-import androidx.lifecycle.SavedStateHandle
-import fhnw.emoba.yelloapp.data.Game
-import fhnw.emoba.yelloapp.data.GameState
+import fhnw.emoba.yelloapp.data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import java.io.InputStream
-import java.io.OutputStream
-import javax.net.ssl.HttpsURLConnection
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
-import kotlin.properties.Delegates
 
-class YelloAppModel(
-    private val activity: Activity
-) {
+class YelloAppModel(applicationContext: Application) : ViewModel() {
     private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-//    // with Preferences DataStore
-//    val dataStore: DataStore<Preferences> = context.createDataStore(
-//        name = "settings"
-//    )
-//
-//    object SettingsSerializer : Serializer<Settings> {
-//        override val defaultValue: Settings = Settings.getDefaultInstance()
-//
-//        override fun readFrom(input: InputStream): Settings {
-//            try {
-//                return Settings.parseFrom(input)
-//            } catch (exception: InvalidProtocolBufferException) {
-//                throw CorruptionException("Cannot read proto.", exception)
-//            }
-//        }
-//
-//        override fun writeTo(
-//            t: Settings,
-//            output: OutputStream) = t.writeTo(output)
-//    }
-//
-//    val settingsDataStore: DataStore<Settings> = context.createDataStore(
-//        fileName = "settings.pb",
-//        serializer = SettingsSerializer
-//    )
-//
-//    //Read from Store
-//    val exampleCounterFlow: Flow<Int> = settingsDataStore.data
-//        .map { settings ->
-//            // The exampleCounter property is generated from the proto schema.
-//            settings.exampleCounter
-//        }
-//
-//    //Write to Store
-//    suspend fun incrementCounter() {
-//        settingsDataStore.updateData { currentSettings ->
-//            currentSettings.toBuilder()
-//                .setExampleCounter(currentSettings.exampleCounter + 1)
-//                .build()
-//        }
-//    }
 
     var newGameDialog by mutableStateOf(false)
 
     var currentScreen by mutableStateOf(Screen.HOME)
     var currentGame: Game by mutableStateOf(Game(""))
-    var isLoading by mutableStateOf(false)
-    var enableDarkMode by mutableStateOf(false)
+    var isLoading by mutableStateOf(false) //TODO: loading animation Homescreen
+    var isDarkMode by mutableStateOf(false)
 
+    //TODO: migrate to db
     var gameList: MutableList<Game> = mutableListOf()
 
     var tempPointA by mutableStateOf(0)
     var tempPointB by mutableStateOf(0)
     var slider by mutableStateOf(50)
     var sliderWidth by mutableStateOf(0f)
+
+    private val preferenceRepository: PreferenceRepository
+    //    private val gameRepository: GameRepository
+    init {
+        val db = AppDatabase.getInstance(applicationContext)
+        val preferenceDao = db.preferenceDao()
+        preferenceRepository = PreferenceRepository(preferenceDao)
+
+        getDarkModeAsync()
+    }
 
     fun createGame(name: String) {
         val game = Game(name)
@@ -108,6 +63,19 @@ class YelloAppModel(
         }
     }
 
+    fun getDarkModeAsync() {
+        modelScope.launch {
+            isDarkMode = preferenceRepository.getPreference("darkmode").value.toBoolean()
+        }
+    }
+
+    fun setDarkModeValue(value: Boolean) {
+        modelScope.launch {
+            preferenceRepository.setPreference("darkmode", value)
+            isDarkMode = value
+        }
+    }
+
     fun setSliderValue(value: Float) {
         val convertedValue = (value * (100 / sliderWidth)).roundToInt()
         val roundedValue = 5 * (convertedValue / 5)
@@ -118,11 +86,5 @@ class YelloAppModel(
         } else {
             slider = roundedValue
         }
-    }
-
-    fun moveSliderValue(value: Float) {
-        var convertedDelta = (value * (100 / sliderWidth)).roundToInt()
-        convertedDelta = 5 * (convertedDelta / 5)
-        slider += convertedDelta
     }
 }

@@ -1,10 +1,21 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = "1.4.21"
+    // Define versions in a single place
+    ext {
+        // Sdk and tools
+        compileSdkVersion = 30
+        minSdkVersion = 21
+        targetSdkVersion = 30
 
-    def compose_release_version = "alpha09"
-    ext.compose_version = "1.0.0-$compose_release_version"
+        // App dependencies
+        kotlin_version = "1.4.21"
+        compose_release_version = "alpha09"
+        compose_version = "1.0.0-$compose_release_version"
+        room_version = "2.2.6"
+        workVersion = '2.4.0'
+        gsonVersion = '2.8.6'
+    }
 
     repositories {
         google()

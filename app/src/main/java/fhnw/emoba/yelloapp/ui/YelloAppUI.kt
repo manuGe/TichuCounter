@@ -1,7 +1,6 @@
 package fhnw.emoba.yelloapp.ui
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
@@ -33,7 +32,7 @@ fun AppUI(model: YelloAppModel) {
             onError = Color(0xFFFFFFFF)
         )
         val darkColors = darkColors()
-        val colors = if (enableDarkMode) darkColors else lightColors
+        val colors = if (isDarkMode) darkColors else lightColors
 
         MaterialTheme(colors = colors) {
             Crossfade(current = currentScreen) { screen ->

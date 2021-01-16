@@ -90,8 +90,8 @@ private fun Drawer(model: YelloAppModel) {
                 Text(text = "Dark Mode")
                 HSpace(20)
                 Switch(
-                    checked = enableDarkMode,
-                    onCheckedChange = { enableDarkMode = it }
+                    checked = isDarkMode,
+                    onCheckedChange = { setDarkModeValue(it) }
                 )
             }
         }
@@ -187,7 +187,6 @@ fun NewGamePopup() {
                     )
                 }
             }
-
         }
     }
 }
