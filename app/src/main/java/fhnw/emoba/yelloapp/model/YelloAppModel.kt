@@ -16,11 +16,10 @@ class YelloAppModel(applicationContext: Application) : ViewModel() {
     var newGameDialog by mutableStateOf(false)
 
     var currentScreen by mutableStateOf(Screen.HOME)
-    var currentGame: Game by mutableStateOf(Game(""))
+    var currentGame: Game by mutableStateOf(Game(name = ""))
     var isLoading by mutableStateOf(false) //TODO: loading animation Homescreen
     var isDarkMode by mutableStateOf(false)
 
-    //TODO: migrate to db
     var gameList: MutableList<Game> = mutableListOf()
 
     var tempPointA by mutableStateOf(0)
@@ -29,19 +28,33 @@ class YelloAppModel(applicationContext: Application) : ViewModel() {
     var sliderWidth by mutableStateOf(0f)
 
     private val preferenceRepository: PreferenceRepository
-    //    private val gameRepository: GameRepository
+    private val gameRepository: GameRepository
     init {
         val db = AppDatabase.getInstance(applicationContext)
         val preferenceDao = db.preferenceDao()
+        val gameDao = db.gameDao()
         preferenceRepository = PreferenceRepository(preferenceDao)
+        gameRepository = GameRepository(gameDao)
 
+        getAllGamesAsync()
         getDarkModeAsync()
     }
 
-    fun createGame(name: String) {
-        val game = Game(name)
+    fun getAllGamesAsync() {
+        isLoading = true
+        modelScope.launch {
+            gameList = gameRepository.getAllGames()
+            isLoading = false
+        }
+    }
+
+    fun createGameAsync(name: String) {
+        val game = Game(name = name)
+        modelScope.launch {
+            gameRepository.createGame(game)
+            getAllGamesAsync()
+        }
         currentGame = game
-        gameList.add(game)
         currentScreen = Screen.GAME
     }
 
@@ -61,10 +74,24 @@ class YelloAppModel(applicationContext: Application) : ViewModel() {
         if (teamA.sum() >= 1000 || teamB.sum() >= 1000) {
             currentGame.state = GameState.FINISHED
         }
+
+        updateGame(currentGame)
+    }
+
+    fun updateGame(game: Game) {
+        modelScope.launch {
+            gameRepository.setGame(game)
+        }
     }
 
     fun getDarkModeAsync() {
+        var counter = 0
         modelScope.launch {
+            // check 5 seconds long if preferences were set
+            while(preferenceRepository.countPreferences() <= 0 && counter < 50) {
+                counter++
+                Thread.sleep(100)
+            }
             isDarkMode = preferenceRepository.getPreference("darkmode").value.toBoolean()
         }
     }

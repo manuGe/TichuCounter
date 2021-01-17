@@ -7,9 +7,6 @@ import androidx.compose.runtime.setValue
 
 class PreferenceRepository(private val preferencesDao: PreferencesDao) {
 
-//    var enableDarkMode by mutableStateOf(false)
-//    var gameList: MutableList<Game> = mutableListOf()
-
     fun getPreference(preference: String) =
         preferencesDao.getPreference(preference)
 
@@ -21,4 +18,6 @@ class PreferenceRepository(private val preferencesDao: PreferencesDao) {
 
     fun deletePreference(preference: String) =
         preferencesDao.deletePreference(Preference(preference, true.toString())) //TODO: only String
+
+    fun countPreferences() = preferencesDao.count()
 }

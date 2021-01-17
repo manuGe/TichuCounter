@@ -18,4 +18,7 @@ interface PreferencesDao {
 
     @Delete
     fun deletePreference(preference: Preference)
+
+    @Query("SELECT COUNT(*) from preferences")
+    fun count() : Int
 }

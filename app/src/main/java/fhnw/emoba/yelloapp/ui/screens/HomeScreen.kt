@@ -169,7 +169,7 @@ fun NewGamePopup() {
                                 colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
                                 enabled = textState.value.text.isNotEmpty(),
                                 onClick = {
-                                    createGame(textState.value.text)
+                                    createGameAsync(textState.value.text)
                                     newGameDialog = false
                                 }) {
                                 Text("Bestätigen")

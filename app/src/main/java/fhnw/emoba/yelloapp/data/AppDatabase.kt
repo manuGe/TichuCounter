@@ -11,31 +11,15 @@ import fhnw.emoba.yelloapp.utilities.DATABASE_NAME
 import fhnw.emoba.yelloapp.workers.SeedDatabaseWorker
 
 @Database(
-    entities = arrayOf(Preference::class),
+    entities = [Preference::class, Game::class],
     version = 1
 )
 
 abstract class AppDatabase : RoomDatabase() {
     abstract fun preferenceDao(): PreferencesDao
+    abstract fun gameDao(): GameDao
 
     companion object {
-//        @Volatile
-//        private var INSTANCE: AppDatabase? = null
-//
-//        fun getDatabase(context: Context): AppDatabase {
-//            val tempInstance = INSTANCE
-//            if (tempInstance != null) {
-//                return tempInstance
-//            }
-//            synchronized(this) {
-//                val instance = Room.databaseBuilder(
-//                    context.applicationContext,
-//                    AppDatabase::class.java,
-//                    "app_database.db"
-//                ).build()
-//                INSTANCE = instance
-//                return instance
-
         // For Singleton instantiation
         @Volatile
         private var instance: AppDatabase? = null
