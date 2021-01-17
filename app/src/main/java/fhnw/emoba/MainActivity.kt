@@ -5,6 +5,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.setContent
+import androidx.lifecycle.Observer
 import fhnw.emoba.yelloapp.YelloApp
 
 
@@ -22,10 +23,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Eine der Activity-LiveCycle-Methoden. Im Laufe des Semesters werden weitere benötigt
-     * werden. Auch die leiten den Aufruf lediglich an die EmobaApp weiter.
-     */
     override fun onStop() {
         super.onStop()
         app.onStop(activity = this)

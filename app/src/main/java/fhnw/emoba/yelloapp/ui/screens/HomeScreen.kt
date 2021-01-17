@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -60,12 +61,12 @@ fun HomeScreen(model: YelloAppModel) {
 private fun Body(model: YelloAppModel) {
     model.apply {
         LazyColumn {
-            items(gameList) { game: Game ->
+            items(gameList) { game ->
                 GameCard(model, game)
             }
         }
-        NewGamePopup()
     }
+    NewGamePopup()
 }
 
 @Composable
@@ -109,29 +110,37 @@ private fun FAB(model: YelloAppModel) {
 
 @Composable
 private fun GameCard(model: YelloAppModel, game: Game) {
-    Card(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
-            .clickable(
-                onClick = {
-                    model.currentGame = game
-                    model.currentScreen = Screen.GAME
-                }
-            ),
-        elevation = 8.dp
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.Start
+    with(model) {
+        Card(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+                .clickable(
+                    onClick = {
+                        getGameAsync(game.id)
+                        currentScreen = Screen.GAME
+                    }
+                ),
+            elevation = 8.dp
         ) {
-            Column(modifier = Modifier.padding(10.dp)) {
-                Text(text = game.name, style = TextStyle(fontSize = 20.sp))
-                VSpace(height = 5)
-                Text(text = "Zustand: " + game.state.text)
-                VSpace(height = 2)
-                Text(text = "Spielstand: " + game.stats)
-                VSpace(height = 2)
-                Text(text = "Zuletzt gespielt: " + SimpleDateFormat("D.M.yy HH:mm").format(Date(game.time)))
+            Row(
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Column(modifier = Modifier.padding(10.dp)) {
+                    Text(text = game.name, style = TextStyle(fontSize = 20.sp))
+                    VSpace(height = 5)
+                    Text(text = "Zustand: " + game.state.text)
+                    VSpace(height = 2)
+                    Text(text = "Spielstand: " + game.stats)
+                    VSpace(height = 2)
+                    Text(
+                        text = "Zuletzt gespielt: " + SimpleDateFormat("D.M.yy HH:mm").format(
+                            Date(
+                                game.time
+                            )
+                        )
+                    )
+                }
             }
         }
     }

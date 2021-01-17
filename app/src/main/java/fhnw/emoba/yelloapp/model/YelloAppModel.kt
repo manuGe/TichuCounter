@@ -1,8 +1,8 @@
 package fhnw.emoba.yelloapp.model
 
-import android.app.Application
-import androidx.lifecycle.ViewModel
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*
+import androidx.lifecycle.*
 import fhnw.emoba.yelloapp.data.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,17 +10,23 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-class YelloAppModel(applicationContext: Application) : ViewModel() {
+class YelloAppModel(activity: AppCompatActivity) : ViewModel() {
     private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     var newGameDialog by mutableStateOf(false)
 
     var currentScreen by mutableStateOf(Screen.HOME)
-    var currentGame: Game by mutableStateOf(Game(name = ""))
+    var currentGame by mutableStateOf(Game(name = ""))
+    var currentGameState by mutableStateOf(GameState.RUNNING)
+    var currentGamePoints: MutableList<Pair<Int, Int>> = mutableStateListOf()
+
     var isLoading by mutableStateOf(false) //TODO: loading animation Homescreen
     var isDarkMode by mutableStateOf(false)
 
     var gameList: MutableList<Game> = mutableListOf()
+//    TODO: LiveData/Flow needs a working Observer in the MainActivity
+//    var gameList = gameRepository.getAllGames().asLiveData()
+//    in GameDao:     fun getAll(): Flow<List<Game>>
 
     var tempPointA by mutableStateOf(0)
     var tempPointB by mutableStateOf(0)
@@ -29,8 +35,9 @@ class YelloAppModel(applicationContext: Application) : ViewModel() {
 
     private val preferenceRepository: PreferenceRepository
     private val gameRepository: GameRepository
+
     init {
-        val db = AppDatabase.getInstance(applicationContext)
+        val db = AppDatabase.getInstance(activity.applicationContext)
         val preferenceDao = db.preferenceDao()
         val gameDao = db.gameDao()
         preferenceRepository = PreferenceRepository(preferenceDao)
@@ -49,17 +56,23 @@ class YelloAppModel(applicationContext: Application) : ViewModel() {
     }
 
     fun createGameAsync(name: String) {
-        val game = Game(name = name)
+        currentGame = Game(name = name)
         modelScope.launch {
-            gameRepository.createGame(game)
+            gameRepository.createGame(currentGame)
+
+            // reset mutable values
+            currentGamePoints = currentGame.points
+            currentGameState = currentGame.state
+
+            // reload new game list
             getAllGamesAsync()
         }
-        currentGame = game
         currentScreen = Screen.GAME
     }
 
     fun submitPoints() {
-        currentGame.points.add(Pair(tempPointA + slider, tempPointB + (100 - slider)))
+        currentGamePoints.add(Pair(tempPointA + slider, tempPointB + (100 - slider)))
+        currentGame.points = currentGamePoints
         currentGame.time = System.currentTimeMillis()
 
         tempPointA = 0
@@ -72,15 +85,28 @@ class YelloAppModel(applicationContext: Application) : ViewModel() {
         currentGame.stats = teamA.sum().toString() + " - " + teamB.sum().toString()
 
         if (teamA.sum() >= 1000 || teamB.sum() >= 1000) {
-            currentGame.state = GameState.FINISHED
+            currentGameState = GameState.FINISHED
+            currentGame.state = currentGameState
         }
 
-        updateGame(currentGame)
+        updateGameAsync(currentGame)
     }
 
-    fun updateGame(game: Game) {
+    fun updateGameAsync(game: Game) {
         modelScope.launch {
             gameRepository.setGame(game)
+        }
+    }
+
+    fun getGameAsync(id: Long) {
+        modelScope.launch {
+            currentGame = gameRepository.getGame(id)
+
+            currentGamePoints = mutableStateListOf()
+            currentGame.points.forEach { pair ->
+                currentGamePoints.add(pair)
+            }
+            currentGameState = currentGame.state
         }
     }
 
@@ -88,7 +114,7 @@ class YelloAppModel(applicationContext: Application) : ViewModel() {
         var counter = 0
         modelScope.launch {
             // check 5 seconds long if preferences were set
-            while(preferenceRepository.countPreferences() <= 0 && counter < 50) {
+            while (preferenceRepository.countPreferences() <= 0 && counter < 50) {
                 counter++
                 Thread.sleep(100)
             }

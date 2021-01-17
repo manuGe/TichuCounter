@@ -70,7 +70,7 @@ dependencies {
 //    implementation "androidx.compose.foundation:foundation:$compose_version"
 //    implementation "androidx.compose.animation:animation:$compose_version"
 
-    // Persistence
+    // Persistence with Room
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
@@ -80,10 +80,10 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
 
     //Lifecycle Components
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
 
     //Annotation processor
     //noinspection LifecycleAnnotationProcessorWithJava8

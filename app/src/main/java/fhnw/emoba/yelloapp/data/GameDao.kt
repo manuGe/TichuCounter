@@ -5,7 +5,7 @@ import androidx.room.*
 @Dao
 interface GameDao {
     @Query("SELECT * FROM games WHERE id LIKE :id ")
-    fun get(id: String): Game
+    fun get(id: Long): Game
 
     @Query("SELECT * FROM games")
     fun getAll(): MutableList<Game>

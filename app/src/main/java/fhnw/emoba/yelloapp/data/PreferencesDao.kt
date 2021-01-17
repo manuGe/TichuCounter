@@ -1,6 +1,7 @@
 package fhnw.emoba.yelloapp.data
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PreferencesDao {

@@ -45,6 +45,7 @@ fun GameScreen(model: YelloAppModel) {
     }
     BackButtonHandler {
         model.currentScreen = Screen.HOME
+        model.getAllGamesAsync()
     }
 }
 
@@ -58,7 +59,7 @@ private fun Body(model: YelloAppModel) {
         )
         {
             Table(model)
-            if (currentGame.state == GameState.RUNNING) {
+            if (currentGameState == GameState.RUNNING) {
                 VSpace(10)
                 PointPreview(model)
                 VSpace(10)
@@ -94,7 +95,7 @@ fun Table(model: YelloAppModel) {
             }
             VSpace(10)
 
-            currentGame.points.forEach { round ->
+            currentGamePoints.forEach { round ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -116,8 +117,8 @@ fun Table(model: YelloAppModel) {
                     .padding(5.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                val first = currentGame.points.map { it.first }
-                val second = currentGame.points.map { it.second }
+                val first = currentGamePoints.map { it.first }
+                val second = currentGamePoints.map { it.second }
                 Text(
                     text = first.sum().toString(),
                     style = TextStyle(fontSize = 17.sp, fontWeight = FontWeight.Bold)

@@ -12,7 +12,7 @@ import fhnw.emoba.yelloapp.workers.SeedDatabaseWorker
 
 @Database(
     entities = [Preference::class, Game::class],
-    version = 1
+    version = 2
 )
 
 abstract class AppDatabase : RoomDatabase() {

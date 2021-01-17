@@ -3,7 +3,7 @@ package fhnw.emoba.yelloapp.data
 
 class GameRepository(private val gameDao: GameDao) {
 
-    fun getGame(id: String) =
+    fun getGame(id: Long) =
         gameDao.get(id)
 
     fun getAllGames() = gameDao.getAll()

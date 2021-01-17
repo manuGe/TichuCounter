@@ -11,7 +11,7 @@ object YelloApp : EmobaApp {
     lateinit var model: YelloAppModel
 
     override fun initialize(activity: AppCompatActivity, savedInstanceState: Bundle?) {
-        model = YelloAppModel(activity.application)
+        model = YelloAppModel(activity)
     }
 
     @Composable

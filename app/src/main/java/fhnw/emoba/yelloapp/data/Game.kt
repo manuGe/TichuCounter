@@ -5,7 +5,6 @@ import androidx.room.*
 import com.google.gson.Gson
 
 import com.google.gson.reflect.TypeToken
-import java.lang.reflect.Type
 
 
 @Entity(tableName = "games")
@@ -52,7 +51,7 @@ class Converters {
 //            return mutableStateListOf()
 //        }
         val listType = object : TypeToken<MutableList<Pair<Int, Int>>>() {}.type
-        return Gson().fromJson(value, listType)
+        return Gson().fromJson(value, listType) //FIXME: does not return mutableStateListOf()
     }
 
     @TypeConverter

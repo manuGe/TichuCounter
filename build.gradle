@@ -10,11 +10,12 @@ buildscript {
 
         // App dependencies
         kotlin_version = "1.4.21"
-        compose_release_version = "alpha09"
+        compose_release_version = "alpha10"
         compose_version = "1.0.0-$compose_release_version"
         room_version = "2.2.6"
         workVersion = '2.4.0'
         gsonVersion = '2.8.6'
+        lifecycleVersion = '2.2.0'
     }
 
     repositories {
