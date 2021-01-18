@@ -334,7 +334,9 @@ fun GameTopBar(model: YelloAppModel) {
         TopAppBar(
             title = { Text(text = Screen.GAME.title + ": " + currentGame.name) },
             navigationIcon = {
-                IconButton(onClick = { currentScreen = Screen.HOME }) {
+                IconButton(onClick = {
+                    model.getAllGamesAsync()
+                    currentScreen = Screen.HOME }) {
                     Icon(Icons.Filled.ArrowBack)
                 }
             }
