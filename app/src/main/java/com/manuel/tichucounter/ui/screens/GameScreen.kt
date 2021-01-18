@@ -160,7 +160,7 @@ fun PointPreview(model: TichuAppModel) {
                             .padding(2.dp)
                     )
                     Text(
-                        text = "$slider",
+                        text = (slider - 25).toString(),
                         textAlign = TextAlign.Center,
                         color = Color.Gray,
                         modifier = Modifier
@@ -188,7 +188,7 @@ fun PointPreview(model: TichuAppModel) {
                             .padding(2.dp)
                     )
                     Text(
-                        text = (100 - slider).toString(),
+                        text = (125 - slider).toString(),
                         textAlign = TextAlign.Center,
                         color = Color.Gray,
                         modifier = Modifier
@@ -240,8 +240,8 @@ fun Slider(model: TichuAppModel) {
                     )
                     drawLine(
                         color = colors.secondary,
-                        start = Offset(sliderWidth / 100 * slider, -20f),
-                        end = Offset(sliderWidth / 100 * slider, canvasHeight.value + 20f),
+                        start = Offset(sliderWidth / 150 * slider, -20f),
+                        end = Offset(sliderWidth / 150 * slider, canvasHeight.value + 20f),
                         strokeWidth = 20f
                     )
                 })

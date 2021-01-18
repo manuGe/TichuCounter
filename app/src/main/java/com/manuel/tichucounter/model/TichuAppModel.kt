@@ -30,7 +30,7 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
 
     var tempPointA by mutableStateOf(0)
     var tempPointB by mutableStateOf(0)
-    var slider by mutableStateOf(50)
+    var slider by mutableStateOf(75)
     var sliderWidth by mutableStateOf(0f)
 
     private val preferenceRepository: PreferenceRepository
@@ -71,13 +71,13 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
     }
 
     fun submitPoints() {
-        currentGamePoints.add(Pair(tempPointA + slider, tempPointB + (100 - slider)))
+        currentGamePoints.add(Pair(tempPointA + (slider - 25), tempPointB + (125 - slider)))
         currentGame.points = currentGamePoints
         currentGame.time = System.currentTimeMillis()
 
         tempPointA = 0
         tempPointB = 0
-        slider = 50
+        slider = 75
 
         val teamA = currentGame.points.map { it.first }
         val teamB = currentGame.points.map { it.second }
@@ -130,12 +130,12 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
     }
 
     fun setSliderValue(value: Float) {
-        val convertedValue = (value * (100 / sliderWidth)).roundToInt()
+        val convertedValue = (value * (150 / sliderWidth)).roundToInt()
         val roundedValue = 5 * (convertedValue / 5)
         if (roundedValue < 0) {
             slider = 0
-        } else if (roundedValue > 100) {
-            slider = 100
+        } else if (roundedValue > 150) {
+            slider = 150
         } else {
             slider = roundedValue
         }
