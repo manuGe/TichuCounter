@@ -311,7 +311,7 @@ fun SubmitAndResetButton(model: TichuAppModel) {
                     contentColor = MaterialTheme.colors.secondary
                 ),
                 elevation = ButtonDefaults.elevation(5.dp),
-                onClick = { tempPointA = 0; tempPointB = 0; slider = 50 }) {
+                onClick = { tempPointA = 0; tempPointB = 0; slider = 75 }) {
                 Text(text = "Reset", modifier = Modifier.padding(16.dp))
             }
             Button(

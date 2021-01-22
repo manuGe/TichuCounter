@@ -75,9 +75,7 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
         currentGame.points = currentGamePoints
         currentGame.time = System.currentTimeMillis()
 
-        tempPointA = 0
-        tempPointB = 0
-        slider = 75
+        resetPoints()
 
         val teamA = currentGame.points.map { it.first }
         val teamB = currentGame.points.map { it.second }
@@ -90,6 +88,14 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
         }
 
         updateGameAsync(currentGame)
+    }
+
+    fun resetPoints() {
+        tempPointA = 0
+        tempPointB = 0
+
+        // center slider in the middle (150 / 2)
+        slider = 75
     }
 
     fun updateGameAsync(game: Game) {

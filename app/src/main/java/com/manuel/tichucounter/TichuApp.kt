@@ -20,4 +20,3 @@ object TichuApp : AppInterface {
         AppUI(model)
     }
 }
-
