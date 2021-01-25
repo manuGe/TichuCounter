@@ -12,9 +12,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +26,12 @@ import com.manuel.tichucounter.model.Screen
 import com.manuel.tichucounter.model.TichuAppModel
 import com.manuel.tichucounter.ui.BackButtonHandler
 import com.manuel.tichucounter.ui.VSpace
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.concurrent.timer
 
+@InternalCoroutinesApi
 @Composable
 fun GameScreen(model: TichuAppModel) {
     MaterialTheme {
@@ -58,6 +63,7 @@ fun GameTopBar(model: TichuAppModel) {
     }
 }
 
+@InternalCoroutinesApi
 @Composable
 private fun Body(model: TichuAppModel) {
     with(model) {
@@ -79,6 +85,7 @@ private fun Body(model: TichuAppModel) {
             }
         }
         DeleteRoundDialog(model)
+        UndoSnackbar(model)
     }
 }
 
@@ -312,8 +319,12 @@ fun SubmitAndResetButton(model: TichuAppModel) {
     }
 }
 
+@InternalCoroutinesApi
 @Composable
 fun DeleteRoundDialog(model: TichuAppModel) {
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberScaffoldState()
+
     with(model) {
         if (deleteSelectedPoints) {
             AlertDialog(
@@ -338,6 +349,8 @@ fun DeleteRoundDialog(model: TichuAppModel) {
                         onClick = {
                             deleteSelectedPoints()
                             deleteSelectedPoints = false
+                            showSnackbar = true
+                            hideSnackbar(5000)
                         }) {
                         Text("Löschen")
                     }
@@ -356,3 +369,33 @@ fun DeleteRoundDialog(model: TichuAppModel) {
     }
 }
 
+@Composable
+fun UndoSnackbar(model: TichuAppModel) {
+    with(model) {
+        if (showSnackbar) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                Snackbar(
+                    modifier = Modifier.padding(8.dp),
+                    text = { Text(text = "Punkte wurden entfernt") },
+                    action = {
+                        Button(onClick = {
+                            restoreDeletedPoints()
+                            showSnackbar = false
+                        }) {
+                            Text(
+                                text = "Wiederherstellen",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colors.secondary
+                                )
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+}

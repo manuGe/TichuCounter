@@ -4,17 +4,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.manuel.tichucounter.data.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.math.roundToInt
+import kotlin.properties.Delegates
 
 class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
     private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     var newGameDialog by mutableStateOf(false)
     var deleteSelectedPoints by mutableStateOf(false)
+    var showSnackbar by mutableStateOf(false)
+    var snackBarTimestamp by Delegates.notNull<Long>()
     lateinit var selectedPoints: Pair<Int, Int>
 
     var currentScreen by mutableStateOf(Screen.HOME)
@@ -176,8 +176,24 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
 
     fun deleteSelectedPoints() {
         currentGamePoints.remove(selectedPoints)
-
         currentGame.points = currentGamePoints
         updateGameAsync(currentGame)
+    }
+
+    fun restoreDeletedPoints() {
+        currentGamePoints.add(selectedPoints)
+        currentGame.points = currentGamePoints
+        updateGameAsync(currentGame)
+    }
+
+    @InternalCoroutinesApi
+    fun hideSnackbar(delay: Long) {
+        snackBarTimestamp = System.currentTimeMillis()
+        modelScope.launch {
+            delay(delay)
+            if (System.currentTimeMillis() - snackBarTimestamp > delay) {
+                showSnackbar = false
+            }
+        }
     }
 }
