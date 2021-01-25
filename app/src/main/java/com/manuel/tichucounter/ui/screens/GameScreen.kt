@@ -378,13 +378,14 @@ fun UndoSnackbar(model: TichuAppModel) {
                 verticalArrangement = Arrangement.Bottom
             ) {
                 Snackbar(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(15.dp),
                     text = { Text(text = "Punkte wurden entfernt") },
                     action = {
-                        Button(onClick = {
-                            restoreDeletedPoints()
-                            showSnackbar = false
-                        }) {
+                        TextButton(
+                            onClick = {
+                                restoreDeletedPoints()
+                                showSnackbar = false
+                            }) {
                             Text(
                                 text = "Wiederherstellen",
                                 style = TextStyle(
