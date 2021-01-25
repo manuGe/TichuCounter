@@ -14,6 +14,8 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
     private val modelScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     var newGameDialog by mutableStateOf(false)
+    var deleteSelectedPoints by mutableStateOf(false)
+    lateinit var selectedPoints: Pair<Int, Int>
 
     var currentScreen by mutableStateOf(Screen.HOME)
     var currentGame by mutableStateOf(Game(name = ""))
@@ -22,6 +24,7 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
 
     var isLoading by mutableStateOf(false) //TODO: loading animation Homescreen
     var isDarkMode by mutableStateOf(false)
+    var isSliderMoving by mutableStateOf(false)
 
     var gameList: MutableList<Game> = mutableListOf()
 //    TODO: LiveData/Flow needs a working Observer in the MainActivity
@@ -30,7 +33,10 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
 
     var tempPointA by mutableStateOf(0)
     var tempPointB by mutableStateOf(0)
-    var slider by mutableStateOf(75)
+    var sliderTeamA by mutableStateOf(0)
+    var sliderTeamB by mutableStateOf(0)
+    var sliderDefault = 80
+    var slider by mutableStateOf(sliderDefault)
     var sliderWidth by mutableStateOf(0f)
 
     private val preferenceRepository: PreferenceRepository
@@ -71,7 +77,7 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
     }
 
     fun submitPoints() {
-        currentGamePoints.add(Pair(tempPointA + (slider - 25), tempPointB + (125 - slider)))
+        currentGamePoints.add(Pair(tempPointA + sliderTeamA, tempPointB + sliderTeamB))
         currentGame.points = currentGamePoints
         currentGame.time = System.currentTimeMillis()
 
@@ -93,9 +99,9 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
     fun resetPoints() {
         tempPointA = 0
         tempPointB = 0
-
-        // center slider in the middle (150 / 2)
-        slider = 75
+        sliderTeamA = 0
+        sliderTeamB = 0
+        slider = sliderDefault
     }
 
     fun updateGameAsync(game: Game) {
@@ -136,14 +142,33 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
     }
 
     fun setSliderValue(value: Float) {
-        val convertedValue = (value * (150 / sliderWidth)).roundToInt()
-        val roundedValue = 5 * (convertedValue / 5)
+        val maxSliderLength = sliderDefault * 2
+        val steps = 5
+        val roundedValue = steps * (value.roundToInt() / steps)
         if (roundedValue < 0) {
             slider = 0
-        } else if (roundedValue > 150) {
-            slider = 150
+        } else if (roundedValue > maxSliderLength) {
+            slider = maxSliderLength
         } else {
             slider = roundedValue
         }
+
+        if (slider == sliderDefault) {
+            sliderTeamA = 0
+            sliderTeamB = 0
+        } else if (slider > sliderDefault) {
+            sliderTeamA = 135 - slider
+            sliderTeamB = slider - 35
+        } else if (slider < sliderDefault) {
+            sliderTeamA = 125 - slider
+            sliderTeamB = slider - 25
+        }
+    }
+
+    fun deleteSelectedPoints() {
+        currentGamePoints.remove(selectedPoints)
+
+        currentGame.points = currentGamePoints
+        updateGameAsync(currentGame)
     }
 }

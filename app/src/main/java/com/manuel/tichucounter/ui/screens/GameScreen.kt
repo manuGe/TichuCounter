@@ -1,8 +1,7 @@
 package com.manuel.tichucounter.ui.screens
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.*
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,18 +11,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.gesture.DragObserver
-import androidx.compose.ui.gesture.dragGestureFilter
-import androidx.compose.ui.gesture.pressIndicatorGestureFilter
+import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.WithConstraints
-import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +42,23 @@ fun GameScreen(model: TichuAppModel) {
 }
 
 @Composable
+fun GameTopBar(model: TichuAppModel) {
+    model.apply {
+        TopAppBar(
+            title = { Text(text = Screen.GAME.title + ": " + currentGame.name) },
+            navigationIcon = {
+                IconButton(onClick = {
+                    model.getAllGamesAsync()
+                    currentScreen = Screen.HOME
+                }) {
+                    Icon(Icons.Filled.ArrowBack)
+                }
+            }
+        )
+    }
+}
+
+@Composable
 private fun Body(model: TichuAppModel) {
     with(model) {
         ScrollableColumn(
@@ -62,7 +71,6 @@ private fun Body(model: TichuAppModel) {
             if (currentGameState == GameState.RUNNING) {
                 VSpace(10)
                 PointPreview(model)
-                VSpace(10)
                 Slider(model)
                 VSpace(10)
                 PointButtons(model)
@@ -70,6 +78,7 @@ private fun Body(model: TichuAppModel) {
                 SubmitAndResetButton(model)
             }
         }
+        DeleteRoundDialog(model)
     }
 }
 
@@ -99,7 +108,11 @@ fun Table(model: TichuAppModel) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(5.dp),
+                        .padding(5.dp)
+                        .clickable(onClick = {
+                            deleteSelectedPoints = true
+                            selectedPoints = round
+                        }),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(text = round.first.toString(), style = TextStyle(fontSize = 17.sp))
@@ -155,14 +168,13 @@ fun PointPreview(model: TichuAppModel) {
                     Text(
                         text = "$tempPointA",
                         textAlign = TextAlign.Center,
-//                        style = TextStyle(fontSize = 18.sp),
                         modifier = Modifier
                             .padding(2.dp)
                     )
                     Text(
-                        text = (slider - 25).toString(),
+                        text = sliderTeamA.toString(),
                         textAlign = TextAlign.Center,
-                        color = Color.Gray,
+                        color = if (isSliderMoving) MaterialTheme.colors.secondaryVariant else Color.Gray,
                         modifier = Modifier
                             .padding(2.dp)
                     )
@@ -183,14 +195,13 @@ fun PointPreview(model: TichuAppModel) {
                     Text(
                         text = "$tempPointB",
                         textAlign = TextAlign.Center,
-//                        style = TextStyle(fontSize = 18.sp),
                         modifier = Modifier
                             .padding(2.dp)
                     )
                     Text(
-                        text = (125 - slider).toString(),
+                        text = sliderTeamB.toString(),
                         textAlign = TextAlign.Center,
-                        color = Color.Gray,
+                        color = if (isSliderMoving) MaterialTheme.colors.secondaryVariant else Color.Gray,
                         modifier = Modifier
                             .padding(2.dp)
                     )
@@ -203,48 +214,21 @@ fun PointPreview(model: TichuAppModel) {
 @Composable
 fun Slider(model: TichuAppModel) {
     with(model) {
-        WithConstraints() {
-            val density = AmbientDensity.current.density
-            val canvasWidth = (constraints.maxWidth / density).dp
-            val canvasHeight = 80.dp
-
-            val delta = remember { mutableStateOf(0f) }
-            val colors = MaterialTheme.colors
-
-            Canvas(
-                modifier = Modifier
-                    .size(width = canvasWidth, height = canvasHeight)
-                    .padding(20.dp)
-                    .pressIndicatorGestureFilter(onStart = {
-                        setSliderValue(it.x)
-                    })
-                    .dragGestureFilter(object : DragObserver {
-                        override fun onStart(downPosition: Offset) {
-                            delta.value = downPosition.x
-                            super.onStart(downPosition)
-                        }
-
-                        override fun onDrag(dragDistance: Offset): Offset {
-                            delta.value += dragDistance.x
-                            setSliderValue(delta.value)
-                            return super.onDrag(dragDistance)
-                        }
-                    }),
-                onDraw = {
-                    sliderWidth = size.width
-
-                    drawRect(
-                        color = Color(0xFF3A3C40),
-                        topLeft = Offset(0f, 0f),
-                        size = Size(sliderWidth, canvasHeight.value)
-                    )
-                    drawLine(
-                        color = colors.secondary,
-                        start = Offset(sliderWidth / 150 * slider, -20f),
-                        end = Offset(sliderWidth / 150 * slider, canvasHeight.value + 20f),
-                        strokeWidth = 20f
-                    )
-                })
+        val interactionState = remember { InteractionState() }
+        Slider(
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+            value = slider.toFloat(),
+            onValueChange = { setSliderValue(it) },
+            valueRange = 0f..(sliderDefault * 2).toFloat(),
+            steps = (sliderDefault * 2) / 5 - 1,
+            interactionState = interactionState,
+            thumbColor = MaterialTheme.colors.secondaryVariant,
+            activeTrackColor = MaterialTheme.colors.secondaryVariant
+        )
+        isSliderMoving = when (interactionState.value.lastOrNull()) {
+            Interaction.Focused -> false
+            Interaction.Dragged -> true
+            else -> false
         }
     }
 }
@@ -256,18 +240,18 @@ fun PointButtons(model: TichuAppModel) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Button(
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp)
                         .weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointA += 100 }) {
                     Text(text = "+100", modifier = Modifier.padding(16.dp))
                 }
                 Button(
                     modifier = Modifier
-                        .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp)
                         .weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointB += 100 }) {
                     Text(text = "+100", modifier = Modifier.padding(16.dp))
@@ -278,7 +262,7 @@ fun PointButtons(model: TichuAppModel) {
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointA -= 100 }) {
                     Text(text = "-100", modifier = Modifier.padding(16.dp))
@@ -287,7 +271,7 @@ fun PointButtons(model: TichuAppModel) {
                     modifier = Modifier
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp)
                         .weight(1f),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondaryVariant),
                     elevation = ButtonDefaults.elevation(5.dp),
                     onClick = { tempPointB -= 100 }) {
                     Text(text = "-100", modifier = Modifier.padding(16.dp))
@@ -311,7 +295,7 @@ fun SubmitAndResetButton(model: TichuAppModel) {
                     contentColor = MaterialTheme.colors.secondary
                 ),
                 elevation = ButtonDefaults.elevation(5.dp),
-                onClick = { tempPointA = 0; tempPointB = 0; slider = 75 }) {
+                onClick = { resetPoints() }) {
                 Text(text = "Reset", modifier = Modifier.padding(16.dp))
             }
             Button(
@@ -329,18 +313,46 @@ fun SubmitAndResetButton(model: TichuAppModel) {
 }
 
 @Composable
-fun GameTopBar(model: TichuAppModel) {
-    model.apply {
-        TopAppBar(
-            title = { Text(text = Screen.GAME.title + ": " + currentGame.name) },
-            navigationIcon = {
-                IconButton(onClick = {
-                    model.getAllGamesAsync()
-                    currentScreen = Screen.HOME }) {
-                    Icon(Icons.Filled.ArrowBack)
+fun DeleteRoundDialog(model: TichuAppModel) {
+    with(model) {
+        if (deleteSelectedPoints) {
+            AlertDialog(
+                onDismissRequest = {
+                    deleteSelectedPoints = false
+                },
+                title = {
+                    Text(text = "Runde löschen")
+                },
+                text = {
+                    Column() {
+                        Text("Soll folgende Runde gelöscht werden?")
+                        VSpace(20)
+                        Text(
+                            text = "Team A: ${selectedPoints.first}, Team B: ${selectedPoints.second}"
+                        )
+                    }
+                },
+                confirmButton = {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+                        onClick = {
+                            deleteSelectedPoints()
+                            deleteSelectedPoints = false
+                        }) {
+                        Text("Löschen")
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary),
+                        onClick = {
+                            deleteSelectedPoints = false
+                        }) {
+                        Text("Abbrechen")
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

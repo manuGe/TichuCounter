@@ -19,7 +19,7 @@ data class Game(
     @ColumnInfo(name = "game_stats")
     var stats: String = "0 - 0",
     @ColumnInfo(name = "game_state")
-    var state: GameState = GameState.RUNNING, //TODO: should probably be mutable
+    var state: GameState = GameState.RUNNING,
     @ColumnInfo(name = "game_points")
     var points: MutableList<Pair<Int, Int>> = mutableStateListOf()
 )
