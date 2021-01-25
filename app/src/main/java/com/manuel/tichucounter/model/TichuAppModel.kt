@@ -76,6 +76,15 @@ class TichuAppModel(activity: AppCompatActivity) : ViewModel() {
         currentScreen = Screen.GAME
     }
 
+    fun deleteGameAsync(game: Game) {
+        modelScope.launch {
+            gameRepository.deleteGame(game)
+
+            // reload new game list
+            getAllGamesAsync()
+        }
+    }
+
     fun submitPoints() {
         currentGamePoints.add(Pair(tempPointA + sliderTeamA, tempPointB + sliderTeamB))
         currentGame.points = currentGamePoints
